@@ -1,0 +1,60 @@
+import openpyxl
+from openpyxl.styles import Font
+
+wb = openpyxl.load_workbook("gx_projectid.xlsx")  ## EXCELI YUKLEME
+sheet = wb.active
+## sheet isimlerini yükleme
+Sheet_Names = [wb.sheetnames]
+# print("original sheet names:", Sheet_Names)
+
+## sheet isimlerini array içinde ayırma
+Sheet_Names_Updated = []
+for row in Sheet_Names:
+    for cell in row:
+        Sheet_Names_Updated.append(cell.split())
+
+print("Sheet_Names_Updated:", Sheet_Names_Updated)
+
+## sheet isimlerinden ID ile bitenlerin sayısını arrayde tutma
+Sheet_Names_Endswith_ID_PageNumber =[]
+
+for i in range(len(Sheet_Names_Updated)):
+    x = str(Sheet_Names_Updated[i])
+    if x.endswith("_ID']"):
+        Sheet_Names_Endswith_ID_PageNumber.append(i)
+    else:
+        continue
+
+sheets=[]
+maxRow=[]
+
+for i in range(len(Sheet_Names_Endswith_ID_PageNumber)):
+    sheets.append(wb.worksheets[Sheet_Names_Endswith_ID_PageNumber[i]])
+    maxRow.append(sheets[i].max_row - 1)
+
+print("Array values of sheets ending with '_ID': ",Sheet_Names_Endswith_ID_PageNumber)
+print("maxRow for sheets[i] :",maxRow)
+
+print("Atanmış sheet:" ,sheets)
+
+ws = wb.active
+sheet2 = wb['PowerLED_ID']
+second_column = sheet2['A']
+
+# Create the list
+Sheets_FirstColumn_Values = [cell.value for cell in second_column[1:]]
+
+# usernames_updated = int(usernames.value[2:])
+for i in range(len(Sheets_FirstColumn_Values)):
+    Sheets_FirstColumn_Values[i] = int(Sheets_FirstColumn_Values[i][2:])
+
+print("Sheets_FirstColumn_Values :", Sheets_FirstColumn_Values)
+
+number = int(input("Enter the number to be processed: "))
+
+
+if number in Sheets_FirstColumn_Values:
+    print("accepted")
+else:
+    print("control the number!! it must be between,", Sheets_FirstColumn_Values[0],"and", Sheets_FirstColumn_Values[len(Sheets_FirstColumn_Values)-1],"!!!")
+    exit()

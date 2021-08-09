@@ -1,0 +1,657 @@
+import openpyxl
+from openpyxl.styles import Font
+
+
+#MAIN SAYI OLUSTURMA
+number = int(input("Enter the number to be processed: "))
+wb_obj= openpyxl.load_workbook("gx_projectid.xlsx") ## EXCELI YUKLEME
+
+##########################################################
+##Sheet1- Reserved_ID
+sheet1 = wb_obj['Reserved_ID']  # Reserved_ID sayfasını yükleme
+ReservedValue = int(sheet1["A2"].value[2:])  # "A2"deki sayıyı int haline çevirip "0x" kısmını yok etmek
+
+sheet_1 = wb_obj.worksheets[1]
+sheet_2 = wb_obj.worksheets[2]
+sheet_3 = wb_obj.worksheets[3]
+sheet_4 = wb_obj.worksheets[4]
+
+row_count_1 = sheet_1.max_row   ## 4th digit
+row_count_2 = sheet_2.max_row   ## 5th digit
+row_count_3 = sheet_3.max_row   ## 6th digit
+row_count_4 = sheet_4.max_row   ## last3 digit
+
+# print("row1", row_count_1)
+# print("row2", row_count_2)
+# print("row3", row_count_3)
+# print("row4", row_count_4)
+
+#Digits
+first_3digit= int(str(number)[:3])
+fourth_digit= int(str(number)[3])
+fifth_digit= int(str(number)[4])
+sixth_digit= int(str(number)[5])
+last_3digit= int(str(number)[6:9])
+
+## Conditions of 9 digit number
+if first_3digit != ReservedValue :
+    print("Check the first 3 digits.")
+    exit()
+elif fourth_digit < 0 or fourth_digit >= (row_count_1 -1 ) :
+    print("Check the 4th digit")
+    exit()
+elif fifth_digit < 0 or fifth_digit >= (row_count_2 - 1) :
+    print("Check the 4th digit")
+    exit()
+elif sixth_digit < 0 or sixth_digit >= (row_count_3 - 1) :
+    print("Check the 4th digit")
+    exit()
+elif last_3digit < 0  or last_3digit >= (row_count_4 - 1) :
+    print("Check the first 3 digits.")
+    exit()
+
+
+#Project=wb_obj.create_sheet(title="Project-id")  #Gecici olarak kapattık cunku her run edişimizde yenı sheet olusturuyor
+Project=wb_obj["Project-id"]    # Kod  tamamlanınca bu satır sılınecek usttekı satır kalıcak.
+Project['A1'] = ("Project_ID")  # Title
+Project['A1'].font = Font(bold=True)  #Kalın yazma
+Project['A2'] = str(number) #Excel'e sayıyı atama
+#################################################################
+
+sheet2 = wb_obj['PowerLED_ID']
+PowerLED_ID_B_row = sheet2["B2":"B7"]
+PowerLED_ID_B_values=[]
+
+# Assigning values from b2 to b7
+for row in PowerLED_ID_B_row:
+    for cell in row:
+       PowerLED_ID_B_values.append(cell.value)
+
+
+# Finding the value corresponding to the 4th number in an array
+for i in range(len(PowerLED_ID_B_values)):
+    if PowerLED_ID_B_values[i] == PowerLED_ID_B_values[fourth_digit]:
+         PowerLED_Class = PowerLED_ID_B_values[i]
+
+#################################################################################
+# Class'a karsılık gelen sayıyın CONFİG'ini bulmak
+PowerLED_ID_C_row = sheet2["C2" :"C7" ]
+PowerLED_ID_C_values=[]
+
+for row in PowerLED_ID_C_row:
+    for cell in row:
+       PowerLED_ID_C_values.append(cell.value)
+
+for i in range(len(PowerLED_ID_C_values)):
+    if PowerLED_ID_C_values[i] == PowerLED_ID_C_values[fourth_digit]:
+         PowerLED_Config = PowerLED_ID_C_values[i]
+
+# Class'a karsılık gelen sayıyın CONFİG'ini bulmak
+PowerLED_ID_D_row = sheet2["D2" :"D7" ]
+PowerLED_ID_D_values=[]
+
+for row in PowerLED_ID_D_row:
+    for cell in row:
+       PowerLED_ID_D_values.append(cell.value)
+
+for i in range(len(PowerLED_ID_D_values)):
+    if PowerLED_ID_D_values[i] == PowerLED_ID_D_values[fourth_digit]:
+         PowerLED_PWM_Stand_By = PowerLED_ID_D_values[i]
+
+
+PowerLED_ID_E_row = sheet2["E2" :"E7"]
+PowerLED_ID_E_values=[]
+
+for row in PowerLED_ID_E_row:
+    for cell in row:
+       PowerLED_ID_E_values.append(cell.value)
+
+for i in range(len(PowerLED_ID_E_values)):
+    if PowerLED_ID_E_values[i] == PowerLED_ID_E_values[fourth_digit]:
+         PowerLED_PWM_On = PowerLED_ID_E_values[i]
+
+
+PowerLED_ID_F_row = sheet2["F2" :"F7" ]
+PowerLED_ID_F_values=[]
+
+for row in PowerLED_ID_F_row:
+    for cell in row:
+       PowerLED_ID_F_values.append(cell.value)
+
+for i in range(len(PowerLED_ID_F_values)):
+    if PowerLED_ID_F_values[i] == PowerLED_ID_F_values[fourth_digit]:
+         PowerLED_Blink_Enabled = PowerLED_ID_F_values[i]
+
+#PowerLED_ID excel yazdırma
+#Class
+Project['B1'] = ("PowerLED_Class")  # Title
+Project['B1'].font = Font(bold=True)  #Kalın yazma
+Project['B2'] = str(PowerLED_Class) #
+#Config
+Project['C1'] = ("PowerLED_Config")  # Title
+Project['C1'].font = Font(bold=True)  #Kalın yazma
+Project['C2'] = str(PowerLED_Config) #
+
+Project['D1'] = ("PowerLED_PWM_Stand_By")  # Title
+Project['D1'].font = Font(bold=True)  #Kalın yazma
+Project['D2'] = str(PowerLED_PWM_Stand_By) #
+
+Project['E1'] = ("PowerLED_PWM_On")  # Title
+Project['E1'].font = Font(bold=True)  #Kalın yazma
+Project['E2'] = str(PowerLED_PWM_On) #
+
+Project['F1'] = ("PowerLED_Blink_Enabled")  # Title
+Project['F1'].font = Font(bold=True)  #Kalın yazma
+Project['F2'] = str(PowerLED_Blink_Enabled) #
+
+#################################################################
+#Sheet3 - RC_ID
+sheet3 = wb_obj['RC_ID']
+RC_ID_A_row=sheet3["A2":"A4" ]
+RC_ID_A_values=[]
+## İLK STUNDAKI IDLERİN BASINDAKI 0X kısmını atmak için int çevirme
+for row in RC_ID_A_row:
+    for cell in row:
+        RC_ID_A_values.append(cell.value)
+
+for i in range(len(RC_ID_A_values)):
+    RC_ID_A_values[i] = int(RC_ID_A_values[i][2:])
+
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(RC_ID_A_values)):
+    if RC_ID_A_values[k] == fifth_digit:
+        continue
+
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+RC_ID_B_row = sheet3["B2":"B4"]
+RC_ID_B_values=[]
+for row in RC_ID_B_row:
+    for cell in row:
+       RC_ID_B_values.append(cell.value)
+
+for i in range(len(RC_ID_B_values)):
+    if RC_ID_B_values[i] == RC_ID_B_values[fifth_digit]:
+        RC_ID_Class = RC_ID_B_values[i]
+
+#####
+# Class'a karsılık gelen sayıyın CONFİG'ini bulmak
+RC_ID_C_row = sheet3["C2" :"C4"]
+RC_ID_C_values= []
+
+for row in RC_ID_C_row:
+    for cell in row:
+       RC_ID_C_values.append(cell.value)
+
+for i in range(len(RC_ID_C_values)):
+    if RC_ID_C_values[i] == RC_ID_C_values[fifth_digit]:
+       RC_ID_Config = RC_ID_C_values[i]
+
+#RC_ID excel yazdırma
+#Class
+Project['G1'] = ("RC_Class")  # Title
+Project['G1'].font = Font(bold=True)  #Kalın yazma
+Project['G2'] = str(RC_ID_Class) #
+#Config
+Project['H1'] = ("RC_IR_Config")  # Title
+Project['H1'].font = Font(bold=True)  #Kalın yazma
+Project['H2'] = str(RC_ID_Config) #
+
+
+#################################################################
+#Sheet4 - Brand_ID
+sheet4 = wb_obj['Brand_ID']
+Brand_ID_A_row=sheet4["A2":"A30"]
+Brand_ID_A_values=[]
+
+## İLK STUNDAKI IDLERİN BASINDAKI 0X kısmını atmak için int çevirme
+for row in Brand_ID_A_row:
+    for cell in row:
+       Brand_ID_A_values.append(cell.value)
+
+for i in range(len(Brand_ID_A_values)):
+    if Brand_ID_A_values[i] == None:
+        break
+    else:Brand_ID_A_values[i] = int(Brand_ID_A_values[i][2:])
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Brand_ID_A_values)):
+    if Brand_ID_A_values[k] == sixth_digit:
+        continue
+
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+Brand_ID_B_row = sheet4["B2" : "B5"]
+Brand_ID_B_values=[]
+for row in Brand_ID_B_row:
+    for cell in row:
+       Brand_ID_B_values.append(cell.value)
+
+for i in range(len(Brand_ID_B_values)):
+    if Brand_ID_B_values[i] == Brand_ID_B_values[sixth_digit]:
+        Brand_ID_Class = Brand_ID_B_values[i]
+
+#####
+# Class'a karsılık gelen sayıyın CONFİG'ini bulmak
+Brand_ID_C_row = sheet4["C2" : "C5"]
+Brand_ID_C_values= []
+
+for row in Brand_ID_C_row:
+    for cell in row:
+       Brand_ID_C_values.append(cell.value)
+
+for i in range(len(Brand_ID_C_values)):
+    if Brand_ID_C_values[i] == Brand_ID_C_values[fifth_digit]:
+        Brand_ID_Config = Brand_ID_C_values[i]
+
+#Brand_ID excel yazdırma
+#Class
+Project['I1'] = ("Brand_Class")  # Title
+Project['I1'].font = Font(bold=True)  #Kalın yazma
+Project['I2'] = str(Brand_ID_Class) #
+#Config
+Project['J1'] = ("Brand_Config")  # Title
+Project['J1'].font = Font(bold=True)  #Kalın yazma
+Project['J2'] = str(Brand_ID_Config) #
+
+#################################################################
+#Sheet5 - Product_ID
+sheet5 = wb_obj['Product_ID']
+Product_ID_A_row=sheet5["A2" :"A33"]   #ilk sütünü okuma
+Product_ID_A_values=[]
+
+for row in Product_ID_A_row:
+    for cell in row:
+       Product_ID_A_values.append(cell.value)
+
+## İLK STUNDAKI SAYILARIN BASINDAKI 0X kısmını atmak için int çevirme
+for i in range(len(Product_ID_A_values)):
+    Product_ID_A_values[i] = int(Product_ID_A_values[i][2:])
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Product_ID_A_values)):
+    if Product_ID_A_values[k] == last_3digit:
+        continue
+
+#############
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+Product_ID_B_row = sheet5["B2" : "B33"]
+Product_ID_B_values=[]
+for row in Product_ID_B_row:
+    for cell in row:
+       Product_ID_B_values.append(cell.value)
+
+for i in range(len(Product_ID_B_values)):
+    if Product_ID_B_values[i] == Product_ID_B_values[last_3digit]:
+       Product_ID_Panel_Type = Product_ID_B_values[i]
+
+# Class'a karsılık gelen sayıyın CONFİG'ini bulmak
+Product_ID_C_row = sheet5["C2" : "C33"]
+Product_ID_C_values= []
+
+for row in Product_ID_C_row:
+    for cell in row:
+       Product_ID_C_values.append(cell.value)
+
+for i in range(len(Product_ID_C_values)):
+    if Product_ID_C_values[i] == Product_ID_C_values[last_3digit]:
+        Product_ID_Cabinet_Type= Product_ID_C_values[i]
+
+#############
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+Product_ID_D_row = sheet5["D2" : "D33"]
+Product_ID_D_values=[]
+for row in Product_ID_D_row:
+    for cell in row:
+       Product_ID_D_values.append(cell.value)
+
+for i in range(len(Product_ID_D_values)):
+    if Product_ID_D_values[i] == Product_ID_D_values[last_3digit]:
+       Product_ID_EnergyClass_Type = Product_ID_D_values[i]
+
+#############
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+Product_ID_E_row = sheet5["E2" : "E33"]
+Product_ID_E_values=[]
+for row in Product_ID_E_row:
+    for cell in row:
+       Product_ID_E_values.append(cell.value)
+
+for i in range(len(Product_ID_E_values)):
+    if Product_ID_E_values[i] == Product_ID_E_values[last_3digit]:
+       Product_ID_CompatibleConfig_Type = Product_ID_E_values[i]
+#############
+## Kıyaslama sonucu inputun denk geldiği değerin CLASSını bulma
+Product_ID_F_row = sheet5["F2" : "F33"]
+Product_ID_F_values=[]
+for row in Product_ID_F_row:
+    for cell in row:
+       Product_ID_F_values.append(cell.value)
+
+for i in range(len(Product_ID_F_values)):
+    if Product_ID_F_values[i] == Product_ID_F_values[last_3digit]:
+       Product_ID_KeyPackTarget_Config = Product_ID_F_values[i]
+
+#Panel_Config
+Project['K1'] = ("Product_Panel_Type")  # Title
+Project['K1'].font = Font(bold=True)  #Kalın yazma
+Project['K2'] = str(Product_ID_Panel_Type) #
+#Product_Panel_Gamma_Config
+Project['L1'] = ("Product_Cabinet_Type")  # Title
+Project['L1'].font = Font(bold=True)  #Kalın yazma
+Project['L2'] = str(Product_ID_Cabinet_Type) #
+#Product_EnergyClass_Type
+Project['M1'] = ("Product_EnergyClass_Type")  # Title
+Project['M1'].font = Font(bold=True)  #Kalın yazma
+Project['M2'] = str(Product_ID_EnergyClass_Type) #
+#Product_CompatibleConfig_Type
+Project['N1'] = ("Product_CompatibleConfig_Type")  # Title
+Project['N1'].font = Font(bold=True)  #Kalın yazma
+Project['N2'] = str(Product_ID_CompatibleConfig_Type) #
+#Product_KeyPackTarget_Config
+Project['O1'] = ("Product_KeyPackTarget_Config")  # Title
+Project['O1'].font = Font(bold=True)  #Kalın yazma
+Project['O2'] = str(Product_ID_KeyPackTarget_Config) #
+
+#################################################################
+#Sheet6 - Panel
+sheet6 = wb_obj['Panel']
+Panel_A_row=sheet6["A2" :"A10"]   #ilk sütünü okuma
+Panel_A_values=[]
+
+for row in Panel_A_row:
+    for cell in row:
+       Panel_A_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+sayac = 0
+for k in range(len(Panel_A_values)):
+
+    if Panel_A_values[k] == Product_ID_Panel_Type:
+        type = Panel_A_values[k]
+        sayac = k
+
+#############
+Panel_C_row=sheet6["C2" :"C10"]   #ilk sütünü okuma
+Panel_C_values=[]
+
+for row in Panel_C_row:
+    for cell in row:
+       Panel_C_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_C_values)):
+    if Panel_C_values[k] == Panel_C_values[sayac]:
+       Panel_Config = Panel_C_values[k]
+
+###
+Panel_D_row=sheet6["D2" :"D10"]   #ilk sütünü okuma
+Panel_D_values=[]
+
+for row in Panel_D_row:
+    for cell in row:
+       Panel_D_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_D_values)):
+    if Panel_D_values[k] == Panel_D_values[sayac]:
+        Panel_Gamma_Config = Panel_D_values[k]
+#############
+
+###
+Panel_E_row=sheet6["E2" :"E10"]   #ilk sütünü okuma
+Panel_E_values=[]
+
+for row in Panel_E_row:
+    for cell in row:
+       Panel_E_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_E_values)):
+    if Panel_E_values[k] == Panel_E_values[sayac]:
+        Panel_PQ_Config = Panel_E_values[k]
+#############
+###
+Panel_F_row=sheet6["F2" :"F10"]   #ilk sütünü okuma
+Panel_F_values=[]
+
+for row in Panel_F_row:
+    for cell in row:
+       Panel_F_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_F_values)):
+    if Panel_F_values[k] == Panel_F_values[sayac]:
+       Panel_PQ_Class_Config = Panel_F_values[k] #######################################################################################################################
+#############
+###
+Panel_G_row=sheet6["G2" :"G10"]   #ilk sütünü okuma
+Panel_G_values=[]
+
+for row in Panel_G_row:
+    for cell in row:
+       Panel_G_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_G_values)):
+    if Panel_G_values[k] == Panel_G_values[sayac]:
+        Panel_OSD_Config = Panel_G_values[k]
+#############
+###
+Panel_H_row=sheet6["H2" :"H10"]   #ilk sütünü okuma
+Panel_H_values=[]
+
+for row in Panel_H_row:
+    for cell in row:
+       Panel_H_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Panel_H_values)):
+    if Panel_H_values[k] == Panel_H_values[sayac]:
+        Panel_EDID_Type = Panel_H_values[k]
+
+#############
+#Panel_Config
+Project['P1'] = ("Panel_Config")  # Title
+Project['P1'].font = Font(bold=True)  #Kalın yazma
+Project['P2'] = str(Panel_Config) #
+
+Project['Q1'] = ("Panel_Gamma_Config")  # Title
+Project['Q1'].font = Font(bold=True)  #Kalın yazma
+Project['Q2'] = str(Panel_Gamma_Config) #
+
+Project['R1'] = ("Product_Panel_PQ_Config")  # Title
+Project['R1'].font = Font(bold=True)  #Kalın yazma
+Project['R2'] = str(Panel_PQ_Config) #
+
+Project['S1'] = ("OSD_Config")  # Title
+Project['S1'].font = Font(bold=True)  #Kalın yazma
+Project['S2'] = str(Panel_OSD_Config) #
+
+Project['T1'] = ("EDID_Type")  # Title
+Project['T1'].font = Font(bold=True)  #Kalın yazma
+Project['T2'] = str(Panel_EDID_Type) #
+
+#################################################################
+#Sheet7 - EDID
+sheet7 = wb_obj['EDID']
+EDID_A_values=[]
+EDID_A_row=sheet7["A2" :"A3"]   #ilk sütünü okuma
+
+for row in EDID_A_row:
+    for cell in row:
+       EDID_A_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+sayac = 0
+for k in range(len(EDID_A_values)):
+
+    if EDID_A_values[k] == Panel_EDID_Type:
+        EDID_A_values = EDID_A_values[k]
+        sayac = k
+
+#############
+#print(config)
+EDID_C_values=[]
+EDID_C_row=sheet7["C2" :"C3"]   #ilk sütünü okuma
+
+for row in EDID_C_row:
+    for cell in row:
+       EDID_C_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(EDID_C_values)):
+    if EDID_C_values[k] == EDID_C_values[sayac]:
+       EDID_Config = EDID_C_values[k]
+
+###
+#Panel_Config
+Project['U1'] = ("EDID_Config")  # Title
+Project['U1'].font = Font(bold=True)  #Kalın yazma
+Project['U2'] = str(EDID_Config) #
+
+
+#################################################################
+#Sheet8 - Cabinet
+sheet8 = wb_obj['Cabinet']
+Cabinet_A_row=sheet8["A2" :"A25"]   #ilk sütünü okuma
+Cabinet_A_values=[]
+
+for row in Cabinet_A_row:
+    for cell in row:
+       Cabinet_A_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+sayac = 0
+for k in range(len(Cabinet_A_values)):
+
+    if Cabinet_A_values[k] == Product_ID_Cabinet_Type:
+       cabinet = Cabinet_A_values[k]
+       sayac = k
+
+# #Panel_Config
+Project['V1'] = ("Cabinet_AQ_Config")  # Title
+Project['V1'].font = Font(bold=True)  #Kalın yazma
+Project['V2'] = str(cabinet) #
+
+
+############
+#print(config)
+Cabinet_B_values=[]
+Cabinet_B_row=sheet8["B2" :"B25"]   #ilk sütünü okuma
+
+for row in Cabinet_B_row:
+    for cell in row:
+       Cabinet_B_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Cabinet_B_values)):
+    if Cabinet_B_values[k] == Cabinet_B_values[sayac]:
+       Cabinet_AQ_Config = Cabinet_B_values[k]
+###
+#Panel_Config
+Project['W1'] = ("Cabinet_AQ_Config")  # Title
+Project['W1'].font = Font(bold=True)  #Kalın yazma
+Project['W2'] = str(Cabinet_AQ_Config) #
+#
+
+#print(config)
+Cabinet_C_values=[]
+Cabinet_C_row=sheet8["C2" :"C25"]   #ilk sütünü okuma
+
+for row in Cabinet_C_row:
+    for cell in row:
+       Cabinet_C_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(Cabinet_C_values)):
+    if Cabinet_C_values[k] == Cabinet_C_values[sayac]:
+       DEC_Type = Cabinet_C_values[k]
+###
+#Panel_Config
+Project['X1'] = ("Cabinet_DEC_Type")  # Title
+Project['X1'].font = Font(bold=True)  #Kalın yazma
+Project['X2'] = str(DEC_Type) #
+#
+
+#################################################################
+#Sheet9 - DEC
+sheet9 = wb_obj['DEC']
+DEC_A_row=sheet9["A2" :"A5"]   #ilk sütünü okuma
+DEC_A_values=[]
+
+for row in DEC_A_row:
+    for cell in row:
+       DEC_A_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+sayac = 0
+for k in range(len(DEC_A_values)):
+
+    if DEC_A_values[k] == DEC_Type:
+       DEC_Type2 = DEC_A_values[k]
+       sayac = k
+
+############
+#print(config)
+DEC_B_values=[]
+DEC_B_row=sheet9["B2" :"B5"]   #ilk sütünü okuma
+
+for row in DEC_B_row:
+    for cell in row:
+       DEC_B_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(DEC_B_values)):
+    if DEC_B_values[k] == DEC_B_values[sayac]:
+       DEC_Config = DEC_B_values[k]
+###
+#Panel_Config
+Project['Y1'] = ("DEC_Config")  # Title
+Project['Y1'].font = Font(bold=True)  #Kalın yazma
+Project['Y2'] = str(DEC_Config) #
+
+
+#################################################################
+#Sheet10 - EnergyClass
+sheet10 = wb_obj['EnergyClass']
+EnergyClass_A_row=sheet9["A2" :"A13"]   #ilk sütünü okuma
+EnergyClass_A_values=[]
+
+for row in EnergyClass_A_row:
+    for cell in row:
+       EnergyClass_A_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+sayac = 0
+for k in range(len(EnergyClass_A_values)):
+
+    if EnergyClass_A_values[k] == DEC_Type:
+       EnergyClassType = EnergyClass_A_values[k]
+       sayac = k
+
+
+############
+#print(config)
+EnergyClass_B_values=[]
+EnergyClass_B_row=sheet10["B2" :"B13"]   #ilk sütünü okuma
+
+for row in EnergyClass_B_row:
+    for cell in row:
+       EnergyClass_B_values.append(cell.value)
+
+## Sayıyı int yapınca girilen input ile kıyaslama
+for k in range(len(EnergyClass_B_values)):
+    if EnergyClass_B_values[k] == EnergyClass_B_values[sayac]:
+       EnergyClass_Config = EnergyClass_B_values[k]
+###
+#Panel_Config
+Project['Z1'] = ("EnergyClass_Config")  # Title
+Project['Z1'].font = Font(bold=True)  #Kalın yazma
+Project['Z2'] = str(EnergyClass_Config) #
+#
+
+print("The code ran successfully..")
+
+wb_obj.save("gx_projectid.xlsx")  # save excel
+
+
